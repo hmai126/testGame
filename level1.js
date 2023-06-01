@@ -77,6 +77,7 @@ class level1 extends Phaser.Scene
 
         // mine
         this.player1.inAir = true;
+        this.player1.end = false;
         //
         
 
@@ -127,15 +128,16 @@ class level1 extends Phaser.Scene
             if (!this.sound.locked)
             {
                 // already unlocked so play
-                this.music.play()
+                this.music.play();
             }
             else
             {
                 // wait for 'unlocked' to fire and then play
                 this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
-                    this.music.play()
+                    this.music.play();
                 })
             }
+            this.currentPlayer.end = true;
             //
 
             this.time.delayedCall(200, () => this.scene.start('level2'));
@@ -284,6 +286,13 @@ class level1 extends Phaser.Scene
 
             window.showit = true;
         }
+
+        // mine
+        if (this.currentPlayer.end == true) {
+            this.music =  this.sound.get('music');
+            this.music.stop();
+        }
+        //
 
         
     }

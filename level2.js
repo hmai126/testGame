@@ -17,6 +17,12 @@ class level2 extends Phaser.Scene
     preload ()
     {
         this.load.path = './assets/';
+         // mine
+         this.load.audio('music', 'coniferous-forest-142569.mp3'); 
+         this.load.audio('jumpSFX', 'cartoon-jump-6462.mp3');
+         this.load.audio('entPortal', 'teleport-90137.mp3');
+         this.load.audio('landing', 'human-impact-on-ground-6982.mp3');
+         //
         this.load.image('sky', 'sky.png');
         this.load.image('ground', 'ground.png');
         this.load.image('samurai', 'samurai.png' );
@@ -52,8 +58,12 @@ class level2 extends Phaser.Scene
         
 
         this.player1.name = 'Purple';
-        
 
+         // mine
+         this.player1.inAir = true;
+         this.player1.end = false;
+         //
+        
         this.currentPlayer = this.player1;
 
         
@@ -104,6 +114,27 @@ class level2 extends Phaser.Scene
         
         this.physics.add.collider(this.currentPlayer, this.port2, () => {
             
+            // mine
+            this.music =  this.sound.add('entPortal', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            this.currentPlayer.end = true;
+            //
+
             this.time.delayedCall(200, () => this.scene.start('level3'));
 
         });
@@ -201,6 +232,29 @@ class level2 extends Phaser.Scene
 
         if (this.cursors.up.isDown && this.currentPlayer.body.touching.down && this.currentPlayer.scene)
         {
+
+             // mine
+             this.music =  this.sound.add('jumpSFX', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play()
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play()
+                })
+            }
+
+            this.currentPlayer.inAir = true;
+            //
+
             this.currentPlayer.setVelocityY(-230);
 
             window.showit = true;
