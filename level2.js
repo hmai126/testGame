@@ -164,7 +164,30 @@ class level2 extends Phaser.Scene
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.physics.add.collider(this.player1, ground);
+        this.physics.add.collider(this.player1, ground, () => {
+            // mine
+            if (this.currentPlayer.inAir == true) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+                this.currentPlayer.inAir = false;
+            }
+            //
+        });
         
 
         
