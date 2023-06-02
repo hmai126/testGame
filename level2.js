@@ -17,6 +17,12 @@ class level2 extends Phaser.Scene
     preload ()
     {
         this.load.path = './assets/';
+        // mine
+        this.load.audio('music2', 'level2bgm.mp3'); 
+        //this.load.audio('jumpSFX', 'cartoon-jump-6462.mp3');
+        //this.load.audio('entPortal', 'teleport-90137.mp3');
+        //this.load.audio('landing', 'human-impact-on-ground-6982.mp3');
+        //
         this.load.image('sky', 'sky.png');
         this.load.image('ground', 'ground.png');
         this.load.image('samurai', 'samurai.png' );
@@ -39,7 +45,7 @@ class level2 extends Phaser.Scene
     {
         
         // mine
-        this.music =  this.sound.add('music', {
+        this.music =  this.sound.add('music2', {
             volume: 0.15,
             loop: true
         })
