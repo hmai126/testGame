@@ -13,11 +13,12 @@ class level1 extends Phaser.Scene
     playerdead;
     port;
     port2;
+
     preload ()
     {
         this.load.path = './assets/';
         // mine
-        this.load.audio('music', 'coniferous-forest-142569.mp3'); 
+        this.load.audio('music', ['coniferous-forest-142569.mp3', 'level2bgm.mp3']); 
         this.load.audio('jumpSFX', 'cartoon-jump-6462.mp3');
         this.load.audio('entPortal', 'teleport-90137.mp3');
         this.load.audio('landing', 'human-impact-on-ground-6982.mp3');
@@ -290,6 +291,7 @@ class level1 extends Phaser.Scene
         // mine
         if (this.currentPlayer.end == true) {
             this.music =  this.sound.get('music');
+            console.log(this.music);
             this.music.stop();
         }
         //

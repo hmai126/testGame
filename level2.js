@@ -17,12 +17,6 @@ class level2 extends Phaser.Scene
     preload ()
     {
         this.load.path = './assets/';
-         // mine
-         this.load.audio('music', 'coniferous-forest-142569.mp3'); 
-         this.load.audio('jumpSFX', 'cartoon-jump-6462.mp3');
-         this.load.audio('entPortal', 'teleport-90137.mp3');
-         this.load.audio('landing', 'human-impact-on-ground-6982.mp3');
-         //
         this.load.image('sky', 'sky.png');
         this.load.image('ground', 'ground.png');
         this.load.image('samurai', 'samurai.png' );
@@ -44,7 +38,25 @@ class level2 extends Phaser.Scene
     create ()
     {
         
-        
+        // mine
+        this.music =  this.sound.add('music', {
+            volume: 0.15,
+            loop: true
+        })
+    
+        if (!this.sound.locked)
+        {
+            // already unlocked so play
+            this.music.play();
+        }
+        else
+        {
+            // wait for 'unlocked' to fire and then play
+            this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                this.music.play();
+            })
+        }
+        //
         
         this.add.image(500, 400, 'sky').setScale(1.4);
 
