@@ -8,7 +8,7 @@ class Reset extends Phaser.Scene {
     create() {
         
 
-
+            
                 this.time.delayedCall(1000, () => {
                     let textObject = this.add.text(300,300, "You pass through the portal\nand fulfill your destiny\nyou have regained your soul").setFontSize(20);
                     textObject.setOrigin(0.5);

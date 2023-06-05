@@ -20,6 +20,9 @@ class level6 extends Phaser.Scene
     preload ()
     {
         this.load.path = './assets/';
+        // mine
+        this.load.audio('music6', 'level6bgm.mp3');
+        //
         this.load.image('sky', 'sky.png');
         this.load.image('ground', 'ground.png');
         this.load.image('samurai', 'samurai.png' );
@@ -43,7 +46,25 @@ class level6 extends Phaser.Scene
     create ()
     {
         
-        
+        // mine
+        this.music =  this.sound.add('music6', {
+            volume: 0.15,
+            loop: true
+        })
+    
+        if (!this.sound.locked)
+        {
+            // already unlocked so play
+            this.music.play();
+        }
+        else
+        {
+            // wait for 'unlocked' to fire and then play
+            this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                this.music.play();
+            })
+        }
+        //
         
         
         this.playerdead = false;
@@ -67,6 +88,11 @@ class level6 extends Phaser.Scene
         //this.player2.setPushable(false);
 
         this.currentPlayer = this.player1;
+
+        // mine
+        this.currentPlayer.inAir = true;
+        this.currentPlayer.end = false;
+        //
 
         //platform mechanics
 
@@ -136,7 +162,27 @@ class level6 extends Phaser.Scene
         this.port2 = this.physics.add.staticGroup();
         
         this.physics.add.collider(this.port, this.player2, this.destroyghost, () => {
-            
+
+             // mine
+             this.music =  this.sound.add('entPortal', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            //
+
             this.port2.create(360, 60, "portal1").setScale(.5).refreshBody();
             this.add.sprite(360, 60, 'portal1')
             .play('portal');
@@ -144,19 +190,78 @@ class level6 extends Phaser.Scene
         } );
 
         this.physics.add.collider( this.redenemy, this.player2, this.destroyghost,  () => {
-            
-            this.time.delayedCall(200, () => this.scene.start('level6'));
+            // mine
+            this.music =  this.sound.add('deathsfx', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            this.currentPlayer.end = true;
+            //
+            this.time.delayedCall(200, () => this.scene.restart());
 
         });
 
         this.physics.add.collider(this.player1, this.redenemy2,  () => {
-            
-            this.time.delayedCall(200, () => this.scene.start('level6'));
+            // mine
+            this.music =  this.sound.add('deathsfx', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            this.currentPlayer.end = true;
+            //
+            this.time.delayedCall(200, () => this.scene.restart());
 
         });
         
         this.physics.add.collider(this.currentPlayer, this.port2, () => {
             
+            // mine
+            this.music =  this.sound.add('entPortal', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            this.currentPlayer.end = true;
+            //
+
             this.time.delayedCall(200, () => this.scene.start('Reset'));
 
         });
@@ -186,8 +291,54 @@ class level6 extends Phaser.Scene
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.physics.add.collider(this.player1, ground);
-        this.physics.add.collider(this.player2, ground);
+        this.physics.add.collider(this.player1, ground, () => {
+            // mine
+            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player1) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+                this.currentPlayer.inAir = false;
+            }
+            //
+        });
+        this.physics.add.collider(this.player2, ground, () => {
+            // mine
+            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player2) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+                this.currentPlayer.inAir = false;
+            }
+            //
+        });
 
         this.physics.add.collider(this.player1, this.redenemy);
         this.physics.add.collider(this.player2, this.redenemy);
@@ -279,6 +430,29 @@ class level6 extends Phaser.Scene
 
         if (this.cursors.up.isDown && this.currentPlayer.body.touching.down && this.currentPlayer.scene)
         {
+
+            // mine
+            this.music =  this.sound.add('jumpSFX', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play()
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play()
+                })
+            }
+
+            this.currentPlayer.inAir = true;
+            //
+
             this.currentPlayer.setVelocityY(-230);
 
             window.showit = true;
@@ -310,7 +484,13 @@ class level6 extends Phaser.Scene
         {
             this.redenemy2.setVelocityY(50);
         }
-
+        // mine
+        if (this.currentPlayer.end == true) {
+            this.music =  this.sound.get('music6');
+            console.log(this.music);
+            this.music.stop();
+        }
+        //
     
     }
 

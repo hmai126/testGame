@@ -309,6 +309,14 @@ class level2 extends Phaser.Scene
         {
             this.movingPlatform.setVelocityX(50);
         }
+
+        // mine
+        if (this.currentPlayer.end == true) {
+            this.music =  this.sound.get('music2');
+            console.log(this.music);
+            this.music.stop();
+        }
+        //
     }
 
     

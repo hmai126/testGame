@@ -18,6 +18,9 @@ class level4 extends Phaser.Scene
     preload ()
     {
         this.load.path = './assets/';
+        // mine
+        this.load.audio('music4', 'level4bgm.mp3');
+        //
         this.load.image('sky', 'sky.png');
         this.load.image('ground', 'ground.png');
         this.load.image('samurai', 'samurai.png' );
@@ -40,7 +43,25 @@ class level4 extends Phaser.Scene
     create ()
     {
         
-        
+        // mine
+        this.music =  this.sound.add('music4', {
+            volume: 0.15,
+            loop: true
+        })
+    
+        if (!this.sound.locked)
+        {
+            // already unlocked so play
+            this.music.play();
+        }
+        else
+        {
+            // wait for 'unlocked' to fire and then play
+            this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                this.music.play();
+            })
+        }
+        //
         
         
         this.playerdead = false;
@@ -64,6 +85,11 @@ class level4 extends Phaser.Scene
         //this.player2.setPushable(false);
 
         this.currentPlayer = this.player1;
+
+        // mine
+        this.currentPlayer.inAir = true;
+        this.currentPlayer.end = false;
+        //
 
         //platform mechanics
 
@@ -114,6 +140,26 @@ class level4 extends Phaser.Scene
         this.port2 = this.physics.add.staticGroup();
         
         this.physics.add.collider(this.port, this.player2, this.destroyghost, () => {
+
+            // mine
+              this.music =  this.sound.add('entPortal', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            //
             
             this.port2.create(750, 210, "portal1").setScale(.5).refreshBody();
             this.add.sprite(750, 210, 'portal1')
@@ -122,7 +168,26 @@ class level4 extends Phaser.Scene
         } );
         
         this.physics.add.collider(this.currentPlayer, this.port2, () => {
-            
+            // mine
+            this.music =  this.sound.add('entPortal', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play();
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play();
+                })
+            }
+            this.currentPlayer.end = true;
+            //
             this.time.delayedCall(200, () => this.scene.start('level5'));
 
         });
@@ -152,8 +217,54 @@ class level4 extends Phaser.Scene
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.physics.add.collider(this.player1, ground);
-        this.physics.add.collider(this.player2, ground);
+        this.physics.add.collider(this.player1, ground, () => {
+            // mine
+            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player1) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+                this.currentPlayer.inAir = false;
+            }
+            //
+        });
+        this.physics.add.collider(this.player2, ground, () => {
+            // mine
+            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player2) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+                this.currentPlayer.inAir = false;
+            }
+            //
+        });
 
         this.physics.add.collider(this.player1, ground);
         this.physics.add.collider(this.player2, ground);
@@ -242,6 +353,28 @@ class level4 extends Phaser.Scene
 
         if (this.cursors.up.isDown && this.currentPlayer.body.touching.down && this.currentPlayer.scene)
         {
+            // mine
+             this.music =  this.sound.add('jumpSFX', {
+                volume: 0.2,
+                loop: false
+            })
+        
+            if (!this.sound.locked)
+            {
+                // already unlocked so play
+                this.music.play()
+            }
+            else
+            {
+                // wait for 'unlocked' to fire and then play
+                this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                    this.music.play()
+                })
+            }
+
+            this.currentPlayer.inAir = true;
+            //
+
             this.currentPlayer.setVelocityY(-230);
 
             window.showit = true;
@@ -255,6 +388,14 @@ class level4 extends Phaser.Scene
         {
             this.movingPlatform.setVelocityX(50);
         }
+
+        // mine
+        if (this.currentPlayer.end == true) {
+            this.music =  this.sound.get('music4');
+            console.log(this.music);
+            this.music.stop();
+        }
+        //
     }
 
     destroyghost(player2, port){
