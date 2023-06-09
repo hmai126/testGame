@@ -397,7 +397,7 @@ class level4 extends Phaser.Scene
         });
 
         this.physics.add.collider(this.player2, this.islands, () => {
-            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player1) {
+            if (this.currentPlayer.inAir == true) {
                 this.music =  this.sound.add('landing', {
                     volume: 0.2,
                     loop: false

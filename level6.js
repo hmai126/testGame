@@ -4,9 +4,12 @@ class level6 extends Phaser.Scene
         super("level6")
     }
 
+    time = 0;
+    enemyBullets;
+    playerBullets;
     cursors;
     currentPlayer;
-    player2;
+    //player2;
     player1;
     movingPlatform;
     platforms;
@@ -41,6 +44,11 @@ class level6 extends Phaser.Scene
         this.load.image('portal11', 'portal11.png');
         this.load.image('portal12', 'portal12.png');
         this.load.image('enemy', 'enemy.png' );
+        this.load.image('tengu', 'tengu.png');
+        this.load.image('bullet', 'bullet.png');
+        this.load.image('reticle', 'reticle.png');
+        this.load.image('jail', 'gaybabyjail.png');
+        this.load.image('pbullet', 'playerbullet.png');
     }
 
     create ()
@@ -66,7 +74,9 @@ class level6 extends Phaser.Scene
         }
         //
         
-        
+        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+        this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+
         this.playerdead = false;
         
         
@@ -77,13 +87,15 @@ class level6 extends Phaser.Scene
         ground.create(500, 900, 'ground').setScale(1.3).refreshBody();
         
     
-        
+        this.reticle = this.physics.add.sprite(200, 200, 'reticle');
+        this.reticle.body.allowGravity = false;
+        this.reticle.setOrigin(0.5, 0.5).setDisplaySize(25, 25).setCollideWorldBounds(true);
         
         this.player1 = this.physics.add.sprite(60, 100, 'samurai').setBounce(0.2).setCollideWorldBounds(true).setScale(0.75);
-        this.player2 = this.physics.add.sprite(600, 600, 'samurai').setTint(0xff5555).setBounce(0.2).setCollideWorldBounds(true).setScale(0.75);
+        //this.player2 = this.physics.add.sprite(600, 600, 'samurai').setTint(0xff5555).setBounce(0.2).setCollideWorldBounds(true).setScale(0.75);
 
         this.player1.name = 'Purple';
-        this.player2.name = 'Red';
+        //this.player2.name = 'Red';
 
         //this.player2.setPushable(false);
 
@@ -94,40 +106,32 @@ class level6 extends Phaser.Scene
         this.currentPlayer.end = false;
         //
 
-        //platform mechanics
+       //platform mechanics
 
-        this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(400, 650, 'platform').setScale(.4).refreshBody();
-        
-        this.islands = this.physics.add.staticGroup();
-        const island1 = this.islands.create(50, 380, 'island').refreshBody();
-        const island2 = this.islands.create(150, 300, 'island').refreshBody();
-        const island3 = this.islands.create(260, 280, 'island').refreshBody();
-        const island4 = this.islands.create(360, 160, 'island').refreshBody();
-        const island5 = this.islands.create(450, 60, 'island').refreshBody();
+       this.platforms = this.physics.add.staticGroup();
+       this.platforms.create(400, 650, 'platform').setScale(.4).refreshBody();
+       
+       this.islands = this.physics.add.staticGroup();
+       //const island1 = this.islands.create(60, 400, 'island').refreshBody();
+       const island2 = this.islands.create(180, 380, 'island').refreshBody();
+       const island3 = this.islands.create(380, 300, 'island').refreshBody();
+       const island4 = this.islands.create(560, 180, 'island').refreshBody();
+       const island5 = this.islands.create(760, 180, 'island').refreshBody();
 
-        
-        this.movingPlatform = this.physics.add.image(460, 500, 'platform');
-        this.movingPlatform.setScale(.4);
-        this.movingPlatform.setImmovable(true);
-        this.movingPlatform.body.allowGravity = false;
-        this.movingPlatform.setVelocityX(-70);
+       
+       this.movingPlatform = this.physics.add.image(460, 500, 'platform');
+       this.movingPlatform.setScale(.4);
+       this.movingPlatform.setImmovable(true);
+       this.movingPlatform.body.allowGravity = false;
+       this.movingPlatform.setVelocityX(-70);
 
-        
-        //enemy mechanics (see update functions for movement)
+       
+       //enemy mechanics (see update functions for movement)
 
-        
-        this.redenemy2 = this.physics.add.image(250, 220, 'enemy');
-        this.redenemy2.setScale(.5);
-        this.redenemy2.setImmovable(true);
-        this.redenemy2.body.allowGravity = false;
-        this.redenemy2.setVelocityY(-50);
-
-        this.redenemy = this.physics.add.image(210, 550, 'enemy');
-        this.redenemy.setScale(.5);
-        this.redenemy.setImmovable(true);
-        this.redenemy.body.allowGravity = false;
-        this.redenemy.setVelocityX(50);
+       this.tengu = this.physics.add.image(600, 350, 'tengu');
+       this.tengu.setImmovable(true);
+       this.tengu.body.allowGravity = false;
+       this.tengu.lastFired = 0;
 
         //portal mechanics
 
@@ -228,6 +232,7 @@ class level6 extends Phaser.Scene
         
         this.port2 = this.physics.add.staticGroup();
         
+        /*
         this.physics.add.collider(this.port, this.player2, this.destroyghost, () => {
 
              // mine
@@ -255,7 +260,9 @@ class level6 extends Phaser.Scene
             .play('portal');
 
         } );
-
+        */
+       
+        /*
         this.physics.add.collider( this.redenemy, this.player2, this.destroyghost,  () => {
             // mine
             this.music =  this.sound.add('deathsfx', {
@@ -280,6 +287,7 @@ class level6 extends Phaser.Scene
             this.time.delayedCall(200, () => this.scene.restart());
 
         });
+        */
 
         this.physics.add.collider(this.player1, this.redenemy2,  () => {
             // mine
@@ -382,6 +390,7 @@ class level6 extends Phaser.Scene
             }
             //
         });
+        /*
         this.physics.add.collider(this.player2, ground, () => {
             // mine
             if (this.currentPlayer.inAir == true && this.currentPlayer == this.player2) {
@@ -406,18 +415,21 @@ class level6 extends Phaser.Scene
             }
             //
         });
+        */
 
         this.physics.add.collider(this.player1, this.redenemy);
-        this.physics.add.collider(this.player2, this.redenemy);
+        //this.physics.add.collider(this.player2, this.redenemy);
 
         this.physics.add.collider(this.player1, this.redenemy2);
-        this.physics.add.collider(this.player2, this.redenemy2);
+        //this.physics.add.collider(this.player2, this.redenemy2);
 
+        /*
         this.physics.add.collider(this.player1, this.player2);
         this.physics.add.collider(this.player2, this.movingPlatform, () => {
             this.currentPlayer.inAir = false;
             return this.currentPlayer.body.velocity.y >= 0;
         });
+        */
 
         // this.physics.add.collider(player2, player1);
 
@@ -425,6 +437,7 @@ class level6 extends Phaser.Scene
         window.physics = this.physics;
         window.showit = false;
 
+        /*
         this.input.on('pointerdown', () =>
         {
 
@@ -440,6 +453,7 @@ class level6 extends Phaser.Scene
             }
 
         }, this);
+        */
 
         
         
@@ -449,7 +463,7 @@ class level6 extends Phaser.Scene
         });
 
         this.physics.add.collider(this.currentPlayer, this.islands, () => {
-            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player1) {
+            if (this.currentPlayer.inAir == true) {
                 this.music =  this.sound.add('landing', {
                     volume: 0.2,
                     loop: false
@@ -482,7 +496,7 @@ class level6 extends Phaser.Scene
                 this.currentPlayer.inAir = false;
                 return currentPlayer.body.velocity.y >= 0;
             });
-
+            /*
             this.physics.add.collider(
                 this.player2,
                 this.platforms,
@@ -492,19 +506,90 @@ class level6 extends Phaser.Scene
                     this.currentPlayer.inAir = false;
                     return player2.body.velocity.y >= 0;
                 });
+                */
 
        
         
                 //this.add.text(30, 30, 'CLICK TO CHANGE CHARACTER', { fontSize: '44px', fill: 'black' });
 
+    
+                this.tengu.active=true;
+                this.tengu.health = 3;
+                this.currentPlayer.active = true;
+                this.currentPlayer.health = 10;
+
+                this.input.on('pointerdown', (pointer, time, lastFired) =>
+                {
+                    if (this.currentPlayer.active === false) { return; }
         
+                    // Get bullet from bullets group
+                    const bullet = this.playerBullets.get().setActive(true).setVisible(true);
+        
+                    if (bullet)
+                    {
+                        bullet.fire(this.currentPlayer, this.reticle);
+                        this.physics.add.collider(this.tengu, bullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
+                    }
+                });
+
+                game.canvas.addEventListener('mousedown', () => {
+                    game.input.mouse.requestPointerLock();
+                });
+        
+                // Exit pointer lock when Q or escape (by default) is pressed.
+                this.input.keyboard.on('keydown_Q', event => {
+                    if (game.input.mouse.locked) { game.input.mouse.releasePointerLock(); }
+                }, 0);
+        
+
+                this.input.on('pointermove', pointer =>
+                 {
+                    if (this.input.mouse.locked)
+                {
+                this.reticle.x += pointer.movementX;
+                this.reticle.y += pointer.movementY;
+                    }
+                });
+                
+                if(this.currentPlayer.health <= 0){
+           
+                    this.scene.restart();
+                
+                    }   
+
+                    this.tenguMoving = this.tweens.add({
+                        targets: this.tengu.body.velocity,
+                        props: {
+                            x: { from: 250, to: -250, duration: 3500 },
+                            y: { from: 50, to: -50, duration: 2000 }
+                        },
+                        ease: 'Sine.easeInOut',
+                        yoyo: true,
+                        repeat: -1
+                    });
+
+                    this.jail = this.physics.add.image(900, 600, 'jail');
+                    this.jail.flipX = true;
+                    this.jail.setImmovable(true);
+                    this.jail.body.allowGravity = false;
+
+                    this.jailFloating = this.tweens.add({
+                        targets: this.jail.body.velocity,
+                        props: {
+                            
+                            y: { from: 50, to: -50, duration: 2000 }
+                        },
+                        ease: 'Sine.easeInOut',
+                        yoyo: true,
+                        repeat: -1
+                    });
 
 
     }
 
     
 
-    update ()
+    update (time, delta)
     {
         
         if (this.currentPlayer.inAir == true){
@@ -582,6 +667,8 @@ class level6 extends Phaser.Scene
             this.movingPlatform.setVelocityX(70);
         }
 
+        this.enemyFire(time);
+        /*
         if (this.redenemy.x >= 700)
         {
             this.redenemy.setVelocityX(-50);
@@ -599,17 +686,140 @@ class level6 extends Phaser.Scene
         {
             this.redenemy2.setVelocityY(50);
         }
-        // mine
-        if (this.currentPlayer.end == true) {
-            this.music =  this.sound.get('music6');
-            console.log(this.music);
-            this.music.stop();
-        }
-        //
+*/
     
+    if(this.currentPlayer.health <= 0){
+           
+        this.scene.restart();
+
+    }   
+
+    if(this.tengu.health <= 0){
+    this.scene.start('Reset')
     }
 
-    destroyghost(player2, port, redenemy, redenemy2){
+    }
+
+    
+    enemyHitCallback (enemyHit, bulletHit)
+    {
+        // Reduce health of enemy
+        if (bulletHit.active === true && enemyHit.active === true)
+        {
+            enemyHit.health = enemyHit.health - 1;
+            //console.log('Enemy hp: ', enemyHit.health);
+
+            // Kill enemy if health <= 0
+            if (enemyHit.health <= 0)
+            {
+                enemyHit.setActive(false).setVisible(false);
+            }
+
+            // Destroy bullet
+            bulletHit.setActive(false).setVisible(false);
+        }
+    }
+
+    /*destroyghost(player2, port, redenemy, redenemy2){
         player2.disableBody(true, true);
+    }*/
+
+    playerHitCallback (playerHit, bulletHit)
+    {
+        if (bulletHit.active === true && playerHit.active === true)
+        {
+            playerHit.health = playerHit.health - 1;
+            
+            if(playerHit.health <= 0){
+                
+                playerHit.setActive(false);
+                this.currentPlayer.disableBody(true,true);
+               
+            
+            
+            }
+
+           
+        }
+
+            // Destroy bullet
+            bulletHit.setActive(false).setVisible(false);
+    }
+    
+
+    enemyFire (time)
+    {
+        if (this.tengu.active === false)
+        {
+            return;
+        }
+
+        if ((time - this.tengu.lastFired) > 1000)
+        {
+            this.tengu.lastFired = time;
+
+            // Get bullet from bullets group
+            const bullet = this.enemyBullets.get().setActive(true).setVisible(true);
+
+            if (bullet)
+            {
+                bullet.fire(this.tengu, this.currentPlayer);
+
+                // Add collider between bullet and player
+                this.physics.add.collider(this.currentPlayer, bullet, (playerHit, bulletHit) => this.playerHitCallback(playerHit, bulletHit));
+            }
+        }
     }
 }
+
+    
+
+
+
+class Bullet extends Phaser.GameObjects.Image
+{
+    constructor (scene)
+    {
+        super(scene, 0, 0, 'bullet');
+        this.speed = 6;
+        this.born = 0;
+        this.direction = 0;
+        this.xSpeed = 0;
+        this.ySpeed = 0;
+        this.setSize(12, 12, true);
+    }
+
+    fire (shooter, target)
+    {
+        this.setPosition(shooter.x, shooter.y); // Initial position
+        this.direction = Math.atan((target.x - this.x) / (target.y - this.y));
+
+        // Calculate X and y velocity of bullet to moves it from shooter to target
+        if (target.y >= this.y)
+        {
+            this.xSpeed = this.speed * Math.sin(this.direction);
+            this.ySpeed = this.speed * Math.cos(this.direction);
+        }
+        else
+        {
+            this.xSpeed = -this.speed * Math.sin(this.direction);
+            this.ySpeed = -this.speed * Math.cos(this.direction);
+        }
+
+        this.rotation = shooter.rotation; // angle bullet with shooters rotation
+        this.born = 0; // Time since new bullet spawned
+    }
+
+    update (time)
+    {
+        this.x += this.xSpeed; //* delta;
+        this.y += this.ySpeed; //* delta;
+        //this.born += delta;
+        if (this.born > 1800)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+}
+
