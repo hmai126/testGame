@@ -372,11 +372,51 @@ class level4 extends Phaser.Scene
         });
 
         this.physics.add.collider(this.currentPlayer, this.islands, () => {
+            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player1) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+            }
+            //
             this.currentPlayer.inAir = false;
             return this.currentPlayer.body.velocity.y >= 0;
         });
 
         this.physics.add.collider(this.player2, this.islands, () => {
+            if (this.currentPlayer.inAir == true && this.currentPlayer == this.player1) {
+                this.music =  this.sound.add('landing', {
+                    volume: 0.2,
+                    loop: false
+                })
+            
+                if (!this.sound.locked)
+                {
+                    // already unlocked so play
+                    this.music.play()
+                }
+                else
+                {
+                    // wait for 'unlocked' to fire and then play
+                    this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+                        this.music.play()
+                    })
+                }
+            }
+            //
             this.currentPlayer.inAir = false;
             return this.currentPlayer.body.velocity.y >= 0;
         });
