@@ -697,7 +697,13 @@ class level6 extends Phaser.Scene
     if(this.tengu.health <= 0){
     this.scene.start('Reset')
     }
-
+    // mine
+    if (this.currentPlayer.end == true) {
+        this.music =  this.sound.get('music6');
+        console.log(this.music);
+        this.music.stop();
+    }
+    //
     }
 
     
@@ -821,5 +827,6 @@ class Bullet extends Phaser.GameObjects.Image
             this.setVisible(false);
         }
     }
+
 }
 
