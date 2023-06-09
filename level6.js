@@ -74,7 +74,7 @@ class level6 extends Phaser.Scene
         }
         //
         
-        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+        this.playerBullets = this.physics.add.group({ classType: pBullet, runChildUpdate: true });
         this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
         this.playerdead = false;
@@ -225,10 +225,10 @@ class level6 extends Phaser.Scene
         //
        
 
-        this.port = this.physics.add.staticGroup();
-        this.port.create(750, 400, "portal1").setScale(.5).refreshBody();
-        this.add.sprite(750, 400, 'portal1')
-            .play('portal').setTint(0xff5555);
+       // this.port = this.physics.add.staticGroup();
+        //this.port.create(750, 400, "portal1").setScale(.5).refreshBody();
+        //this.add.sprite(750, 400, 'portal1')
+            //.play('portal').setTint(0xff5555);
         
         this.port2 = this.physics.add.staticGroup();
         
@@ -523,12 +523,12 @@ class level6 extends Phaser.Scene
                     if (this.currentPlayer.active === false) { return; }
         
                     // Get bullet from bullets group
-                    const bullet = this.playerBullets.get().setActive(true).setVisible(true);
+                    const pbullet = this.playerBullets.get().setActive(true).setVisible(true);
         
-                    if (bullet)
+                    if (pbullet)
                     {
-                        bullet.fire(this.currentPlayer, this.reticle);
-                        this.physics.add.collider(this.tengu, bullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
+                        pbullet.fire(this.currentPlayer, this.reticle);
+                        this.physics.add.collider(this.tengu, pbullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
                     }
                 });
 
@@ -787,7 +787,7 @@ class Bullet extends Phaser.GameObjects.Image
     constructor (scene)
     {
         super(scene, 0, 0, 'bullet');
-        this.speed = 6;
+        this.speed = 10;
         this.born = 0;
         this.direction = 0;
         this.xSpeed = 0;
@@ -828,5 +828,52 @@ class Bullet extends Phaser.GameObjects.Image
         }
     }
 
+}
+
+class pBullet extends Phaser.GameObjects.Image
+{
+    constructor (scene)
+    {
+        super(scene, 0, 0, 'pbullet');
+        this.speed = 10;
+        this.born = 0;
+        this.direction = 0;
+        this.xSpeed = 0;
+        this.ySpeed = 0;
+        this.setSize(12, 12, true);
+    }
+
+    fire (shooter, target)
+    {
+        this.setPosition(shooter.x, shooter.y); // Initial position
+        this.direction = Math.atan((target.x - this.x) / (target.y - this.y));
+
+        // Calculate X and y velocity of bullet to moves it from shooter to target
+        if (target.y >= this.y)
+        {
+            this.xSpeed = this.speed * Math.sin(this.direction);
+            this.ySpeed = this.speed * Math.cos(this.direction);
+        }
+        else
+        {
+            this.xSpeed = -this.speed * Math.sin(this.direction);
+            this.ySpeed = -this.speed * Math.cos(this.direction);
+        }
+
+        this.rotation = shooter.rotation; // angle bullet with shooters rotation
+        this.born = 0; // Time since new bullet spawned
+    }
+
+    update (time)
+    {
+        this.x += this.xSpeed; //* delta;
+        this.y += this.ySpeed; //* delta;
+        //this.born += delta;
+        if (this.born > 1800)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
 }
 
