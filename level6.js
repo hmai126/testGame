@@ -450,6 +450,7 @@ class level6 extends Phaser.Scene
             null,
             (currentPlayer, platforms) =>
             {
+                this.currentPlayer.inAir = false;
                 return currentPlayer.body.velocity.y >= 0;
             });
 
@@ -459,6 +460,7 @@ class level6 extends Phaser.Scene
                 null,
                 (player2, platforms) =>
                 {
+                    this.currentPlayer.inAir = false;
                     return player2.body.velocity.y >= 0;
                 });
 
