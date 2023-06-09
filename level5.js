@@ -205,7 +205,7 @@ class level5 extends Phaser.Scene
             key: 'redrun',
             frames: [
                 {key: 'redrun0'},
-                {key: 'rederun1'},
+                {key: 'redrun1'},
                 {key: 'redrun2'},
                 {key: 'redrun3'},
             ],
@@ -414,7 +414,10 @@ class level5 extends Phaser.Scene
         this.physics.add.collider(this.player2, this.redenemy2);
 
         this.physics.add.collider(this.player1, this.player2);
-        this.physics.add.collider(this.player2, this.movingPlatform);
+        this.physics.add.collider(this.player2, this.movingPlatform, () => {
+            this.currentPlayer.inAir = false;
+            return this.currentPlayer.body.velocity.y >= 0;
+        });
 
         // this.physics.add.collider(player2, player1);
 
@@ -440,9 +443,15 @@ class level5 extends Phaser.Scene
 
         
         
-        this.physics.add.collider(this.currentPlayer, this.movingPlatform);
+        this.physics.add.collider(this.currentPlayer, this.movingPlatform, () => {
+            this.currentPlayer.inAir = false;
+            return this.currentPlayer.body.velocity.y >= 0;
+        });
 
-        this.physics.add.collider(this.currentPlayer, this.islands);
+        this.physics.add.collider(this.currentPlayer, this.islands, () => {
+            this.currentPlayer.inAir = false;
+            return this.currentPlayer.body.velocity.y >= 0;
+        });
         
         this.physics.add.collider(
             this.currentPlayer,

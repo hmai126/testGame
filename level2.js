@@ -256,7 +256,10 @@ class level2 extends Phaser.Scene
 
         
         
-        this.physics.add.collider(this.currentPlayer, this.movingPlatform);
+        this.physics.add.collider(this.currentPlayer, this.movingPlatform, () => {
+            this.currentPlayer.inAir = false;
+            return this.currentPlayer.body.velocity.y >= 0;
+        });
         this.physics.add.collider(
             this.currentPlayer,
             this.platforms,
