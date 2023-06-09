@@ -23,9 +23,27 @@ class level1 extends Phaser.Scene
         this.load.audio('entPortal', 'teleport-90137.mp3');
         this.load.audio('landing', 'human-impact-on-ground-6982.mp3');
         //
+        // player anims
+        this.load.image('purpleidle0', 'sprite_purp_samurai_idle0.png');
+        this.load.image('purpleidle1', 'sprite_purp_samurai_idle1.png');
+        this.load.image('purpleidle2', 'sprite_purp_samurai_idle2.png');
+        this.load.image('purplerun0', 'sprite_purp_samurai_run0.png');
+        this.load.image('purplerun1', 'sprite_purp_samurai_run1.png');
+        this.load.image('purplerun2', 'sprite_purp_samurai_run2.png');
+        this.load.image('purplerun3', 'sprite_purp_samurai_run3.png');
+        this.load.image('redidle0', 'sprite_red_samurai_idle0.png');
+        this.load.image('redidle1', 'sprite_red_samurai_idle1.png');
+        this.load.image('redidle2', 'sprite_red_samurai_idle2.png');
+        this.load.image('redrun0', 'sprite_purp_samurai_run0.png');
+        this.load.image('redrun1', 'sprite_purp_samurai_run1.png');
+        this.load.image('redrun2', 'sprite_purp_samurai_run2.png');
+        this.load.image('redrun3', 'sprite_purp_samurai_run3.png');
+        this.load.image('purple_jump', 'Purp Samurai Jump.png');
+        this.load.image('red_jump', 'Red Samurai Jump.png');
+        //
         this.load.image('sky', 'sky.png');
         this.load.image('ground', 'ground.png');
-        this.load.image('samurai', 'samurai.png' );
+        this.load.image('samurai', 'sprite_purp_samurai_idle0.png');
         this.load.image('platform', 'cloudplatform.png' );
         this.load.image('portal1', 'portal1.png');
         this.load.image('portal2', 'portal2.png');
@@ -71,7 +89,7 @@ class level1 extends Phaser.Scene
 
         
         
-        this.player1 = this.physics.add.sprite(230, 600, 'samurai').setBounce(0.2).setCollideWorldBounds(true);
+        this.player1 = this.physics.add.sprite(230, 600, 'samurai').setBounce(0.2).setCollideWorldBounds(true).setScale(0.75);
         
 
         this.player1.name = 'Purple';
@@ -106,7 +124,39 @@ class level1 extends Phaser.Scene
             repeat: -1
         });
 
-        
+        // mine player animations
+        this.anims.create({
+            key: 'purpleidle',
+            frames: [
+                {key: 'purpleidle0'},
+                {key: 'purpleidle1'},
+                {key: 'purpleidle2'},
+            ],
+            delay: 150,
+            frameRate: 3,
+        });
+        //
+
+        // mine player run animations
+        this.anims.create({
+            key: 'purplerun',
+            frames: [
+                {key: 'purplerun0'},
+                {key: 'purplerun1'},
+                {key: 'purplerun2'},
+                {key: 'purplerun3'},
+            ],
+            frameRate: 4,
+        });
+        this.anims.create({
+            key: 'purplejump',
+            frames: [
+                {key: 'purple_jump'},
+            ],
+            delay: 2,
+            frameRate: 3,
+        });
+        //
        
 
         
@@ -190,8 +240,8 @@ class level1 extends Phaser.Scene
                         this.music.play()
                     })
                 }
-                this.currentPlayer.inAir = false;
             }
+            this.currentPlayer.inAir = false;
             //
         });
         
@@ -216,9 +266,11 @@ class level1 extends Phaser.Scene
         this.physics.add.collider(
             this.currentPlayer,
             this.platforms,
+            this.movingPlatform,
             null,
             (currentPlayer, platforms) =>
             {
+                this.currentPlayer.inAir = false;
                 return currentPlayer.body.velocity.y >= 0;
             });
 
@@ -238,31 +290,47 @@ class level1 extends Phaser.Scene
     update ()
     {
         
-        
+        if (this.currentPlayer.inAir == true){
+            this.currentPlayer.anims.play('purplejump');
+        }
 
         if (this.cursors.left.isDown && this.currentPlayer.scene)
         {
+            this.currentPlayer.flipX = true;
+            if(this.currentPlayer.body.touching.down){
+                this.currentPlayer.anims.play('purplerun', true);
+            }
+            
             this.currentPlayer.setVelocityX(-160);
-
-            //this.currentPlayer.anims.play('left', true);
         }
         else if (this.cursors.right.isDown && this.currentPlayer.scene)
         {
+            if(this.currentPlayer.flipX = true){
+                this.currentPlayer.flipX = false;
+            }
+            
+            if(this.currentPlayer.body.touching.down){
+                this.currentPlayer.anims.play('purplerun', true);
+            }
+            
             this.currentPlayer.setVelocityX(160);
-
-            //this.currentPlayer.anims.play('right', true);
         }
         else
         {
             this.currentPlayer.setVelocityX(0);
-
-            //this.currentPlayer.anims.play('turn');
+            
+            if(this.currentPlayer.body.touching.down){
+                this.currentPlayer.anims.play('purpleidle', true);
+            } else {
+            this.currentPlayer.anims.play('purplejump');
+            }
         }
 
         if (this.cursors.up.isDown && this.currentPlayer.body.touching.down && this.currentPlayer.scene)
         {
-            // mine
-            this.music =  this.sound.add('jumpSFX', {
+
+             // mine
+             this.music =  this.sound.add('jumpSFX', {
                 volume: 0.2,
                 loop: false
             })
@@ -287,7 +355,6 @@ class level1 extends Phaser.Scene
 
             window.showit = true;
         }
-
         // mine
         if (this.currentPlayer.end == true) {
             this.music =  this.sound.get('music');

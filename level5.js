@@ -80,8 +80,8 @@ class level5 extends Phaser.Scene
     
         
         
-        this.player1 = this.physics.add.sprite(60, 100, 'samurai').setBounce(0.2).setCollideWorldBounds(true);
-        this.player2 = this.physics.add.sprite(600, 600, 'samurai').setTint(0xff5555).setBounce(0.2).setCollideWorldBounds(true);
+        this.player1 = this.physics.add.sprite(60, 100, 'samurai').setBounce(0.2).setCollideWorldBounds(true).setScale(0.75);
+        this.player2 = this.physics.add.sprite(600, 600, 'samurai').setTint(0xff5555).setBounce(0.2).setCollideWorldBounds(true).setScale(0.75);
 
         this.player1.name = 'Purple';
         this.player2.name = 'Red';
@@ -152,7 +152,74 @@ class level5 extends Phaser.Scene
             repeat: -1
         });
 
+        // mine purple player idle animations
+        this.anims.create({
+            key: 'purpleidle',
+            frames: [
+                {key: 'purpleidle0'},
+                {key: 'purpleidle1'},
+                {key: 'purpleidle2'},
+            ],
+            delay: 150,
+            frameRate: 3,
+        });
+        //
+
+        // mine purple player run animations
+        this.anims.create({
+            key: 'purplerun',
+            frames: [
+                {key: 'purplerun0'},
+                {key: 'purplerun1'},
+                {key: 'purplerun2'},
+                {key: 'purplerun3'},
+            ],
+            frameRate: 4,
+        });
         
+        this.anims.create({
+            key: 'purplejump',
+            frames: [
+                {key: 'purple_jump'},
+            ],
+            delay: 2,
+            frameRate: 3,
+        });
+        //
+
+         // mine red player idle animations
+         this.anims.create({
+            key: 'redidle',
+            frames: [
+                {key: 'redidle0'},
+                {key: 'redidle1'},
+                {key: 'redidle2'},
+            ],
+            delay: 150,
+            frameRate: 3,
+        });
+        //
+
+        // mine player run animations
+        this.anims.create({
+            key: 'redrun',
+            frames: [
+                {key: 'redrun0'},
+                {key: 'rederun1'},
+                {key: 'redrun2'},
+                {key: 'redrun3'},
+            ],
+            frameRate: 4,
+        });
+        this.anims.create({
+            key: 'redjump',
+            frames: [
+                {key: 'red_jump'},
+            ],
+            delay: 2,
+            frameRate: 3,
+        });
+        //
        
 
         this.port = this.physics.add.staticGroup();
@@ -361,10 +428,12 @@ class level5 extends Phaser.Scene
             if (this.currentPlayer === this.player1)
             {
                 this.currentPlayer = this.player2;
+                this.player1.anims.play('purpleidle', true);
             }
             else
             {
                 this.currentPlayer = this.player1;
+                this.player2.anims.play('redidle', true);
             }
 
         }, this);
@@ -381,6 +450,7 @@ class level5 extends Phaser.Scene
             null,
             (currentPlayer, platforms) =>
             {
+                this.currentPlayer.inAir = false;
                 return currentPlayer.body.velocity.y >= 0;
             });
 
@@ -390,6 +460,7 @@ class level5 extends Phaser.Scene
                 null,
                 (player2, platforms) =>
                 {
+                    this.currentPlayer.inAir = false;
                     return player2.body.velocity.y >= 0;
                 });
 
@@ -407,31 +478,47 @@ class level5 extends Phaser.Scene
     update ()
     {
         
-        
+        if (this.currentPlayer.inAir == true){
+            this.currentPlayer.anims.play('purplejump');
+        }
 
         if (this.cursors.left.isDown && this.currentPlayer.scene)
         {
+            this.currentPlayer.flipX = true;
+            if(this.currentPlayer.body.touching.down){
+                this.currentPlayer.anims.play('purplerun', true);
+            }
+            
             this.currentPlayer.setVelocityX(-160);
-
-            //this.currentPlayer.anims.play('left', true);
         }
         else if (this.cursors.right.isDown && this.currentPlayer.scene)
         {
+            if(this.currentPlayer.flipX = true){
+                this.currentPlayer.flipX = false;
+            }
+            
+            if(this.currentPlayer.body.touching.down){
+                this.currentPlayer.anims.play('purplerun', true);
+            }
+            
             this.currentPlayer.setVelocityX(160);
-
-            //this.currentPlayer.anims.play('right', true);
         }
         else
         {
             this.currentPlayer.setVelocityX(0);
-
-            //this.currentPlayer.anims.play('turn');
+            
+            if(this.currentPlayer.body.touching.down){
+                this.currentPlayer.anims.play('purpleidle', true);
+            } else {
+            this.currentPlayer.anims.play('purplejump');
+            }
         }
 
         if (this.cursors.up.isDown && this.currentPlayer.body.touching.down && this.currentPlayer.scene)
         {
-            // mine
-            this.music =  this.sound.add('jumpSFX', {
+
+             // mine
+             this.music =  this.sound.add('jumpSFX', {
                 volume: 0.2,
                 loop: false
             })
